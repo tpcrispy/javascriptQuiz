@@ -1,7 +1,6 @@
 
 var  questionList = {
    allQuestions: [],
-
    addQuestions: function(questions, answers, correct){
      this.allQuestions.push({
        questions: questions,
@@ -10,20 +9,74 @@ var  questionList = {
      });
    },
    displayQuestions: function(randomNumber){
-     console.log(this.allQuestions[randomNumber].questions);
-     this.allQuestions[randomNumber].answers.forEach(function(ele, index){
-       console.log(index + ':' + ' ' + ele);
-     });
-     questionList.continueGame(randomNumber);
+     questionList.setUpEventlistners(randomNumber);
+      var questionH1 = document.querySelector('h1');
+      var answersUL = document.querySelector('ul');
+      answersUL.innerHTML  = '';
+      questionH1.innerHTML = '';
+
+      questionH1.textContent = this.allQuestions[randomNumber].questions;
+
+      for (var i = 0; i < questionList.allQuestions[randomNumber].answers.length; i++) {
+       var answerLI = document.createElement('li');
+       answerLI.id = i;
+       answerLI.textContent = this.allQuestions[randomNumber].answers[i];
+       answerLI.appendChild(this.createChoiceButton());
+       answersUL.appendChild(answerLI);
+     }
+     //questionList.continueGame(randomNumber);
    },
-   getRandomQuestion: function(){
-     var randomNumber = Math.floor((Math.random() * this.allQuestions.length));
-     this.displayQuestions(randomNumber);
+   createChoiceButton: function () {
+     var choiceButton = document.createElement('button');
+     choiceButton.textContent = 'Pick me!';
+     choiceButton.className = 'choiceButton';
+     return choiceButton;
+
    },
-   checkAnswer: function(promptAnswer, randomNumber, callback){
+   checkAnswer: function(choice, randomNumber, callback){
+     var sc;
+     var random =  randomNumber();
+
+    var checkAnswer = this.allQuestions[randomNumber].correct;
+     if (choice === checkAnswer) {
+      sc = callback(true);
+     } else {
+       sc = callback(false);
+     }
+     questionList.displayScore(sc);
+     questionList.getRandomQuestion(random);
+   },
+   continueGame: function() {
+     var keepRandomNumber = Math.floor((Math.random() * this.allQuestions.length));
+     this.displayQuestions(keepRandomNumber);
+
+   },
+   displayScore: function (score) {
+    console.clear();
+    console.log("Your current score is: " + score);
+    console.log('---------------------------------');
+  },
+  setUpEventlistners: function (randomNumber, keepScore) {
+  //  debugger;
+    var answerssUL = document.querySelector('ul');
+    answerssUL.addEventListener("click", function(e){
+      var clicked = e.target;
+      console.log(e.target);
+      if( clicked.className === 'choiceButton') {
+         choice = parseInt(e.target.parentNode.id);
+         console.log(choice);
+        //console.log(choice);
+        questionList.checkAnswer(choice, randomNumber, keepScore);
+
+      }
+
+    });
+
+  },
+  checkAnswer: function(choice, randomNumber, callback){
      var sc;
     var checkAnswer = this.allQuestions[randomNumber].correct;
-     if (promptAnswer === checkAnswer) {
+     if (choice === checkAnswer) {
        console.log('WINNER');
       sc = callback(true);
      } else {
@@ -31,22 +84,23 @@ var  questionList = {
        sc = callback(false);
      }
      questionList.displayScore(sc);
-     questionList.getRandomQuestion();
+     questionList.continueGame();
    },
-   continueGame: function(randomNumber) {
-       var promptAnswer = prompt('What\'s your Answer?');
-       if (promptAnswer !== 'exit'){
-         promptAnswer = parseInt(promptAnswer);
-         this.checkAnswer(promptAnswer, randomNumber, keepScore);
-       }
-   },
-   displayScore: function (score) {
-     console.clear();
-
-   console.log("Your current score is: " + score);
-   console.log('---------------------------------');
-   }
 }
+
+questionList.addQuestions('Is Thomas awesome?', ['yes', 'no'], 0);
+questionList.addQuestions('Does my Internet Suck', ['yes', 'no'], 0);
+questionList.addQuestions('Will this work?', ['yes', 'no', 'Maybe'], 2);
+questionList.addQuestions('Which Framework is better?', ['React.js', 'Angular', 'none, they each have their own strengths..'], 2);
+questionList.addQuestions('pick a number?', ['yes', 'no', 'Maybe'], 1);
+questionList.addQuestions('is this even a question you can answer?', ['yes', 'no', 'Maybe'], 2);
+
+
+var view = {
+
+}
+
+
 
 function score(){
   var sc = 0;
@@ -57,78 +111,8 @@ function score(){
     return sc;
   }
 }
-
 var keepScore = score();
 
 
-questionList.addQuestions('Is Thomas awesome?', ['yes', 'no'], 0);
-questionList.addQuestions('Does my Internet Suck', ['yes', 'no'], 0);
-questionList.addQuestions('Will this work?', ['yes', 'no', 'Maybe'], 2);
-questionList.addQuestions('What Framework is better?', ['React.js', 'Angular', 'none, they each have their own strengths..'], 2);
-questionList.addQuestions('pick a number?', ['yes', 'no', 'Maybe'], 1);
-questionList.addQuestions('is this even a question you can answer?', ['yes', 'no', 'Maybe'], 2);
 
-
-questionList.getRandomQuestion();
-
-
-
-/*
-Question.prototype.logQuestion = function () {
-  console.log(this.questions);
-    this.answers.forEach(function(i, index) {
-    console.log(index + ':' + ' ' + i);
-  });
-}
-
-Question.prototype.checkAnswer = function (alert, callback) {
-  var sc;
-  if(alert === this.correct) {
-    console.log('Correct answer!');
-    sc = callback(true);
-  } else {
-    console.log('wrong answer');
-    sc = callback(false);
-  }
-  this.displayScore(sc);
-}
-Question.prototype.displayScore = function (score) {
-console.log("Your current score is: " + score);
-console.log('---------------------------------');
-};
-
-
-var q1 = new Question('Is Thomas awesome?', ['yes', 'no'], 0);
-var q2 = new Question('Who is more awesome out of Thomas or Samantha?', ['Samantha', 'Thomas', 'Other'], 1);
-var q3 = new Question('Does this internet suck?', ['yes', 'no'], 0);
-
-
-
-
-function continueGame() {
-  var randomNumber = Math.floor((Math.random() * allQuestions.length));
-  allQuestions[randomNumber].logQuestion();
-
-  var alertAnswer = prompt('What\'s your answer?');
-
-  if(alertAnswer !== 'exit'){
-    allQuestions[randomNumber].checkAnswer(parseInt(alertAnswer), keepScore);
-    continueGame();
-  }
-}
-
-//continueGame();
-var view = {
-  displayAnswers: function(){
-    var answersUL = document.querySelector('ul');
-    answersUL.innerHTML = '';
-    allQuestions.forEach(function(ele, index, arr){
-      var answerLI = document.createElement('li');
-      answerLI.id = index;
-      answerLI.textContent = ele;
-      answersUL.appendChild(answerLI);
-
-    });
-      }
-    }
-*/
+questionList.continueGame();
