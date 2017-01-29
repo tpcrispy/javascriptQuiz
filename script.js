@@ -1,6 +1,7 @@
 
 var  questionList = {
    allQuestions: [],
+
    addQuestions: function(questions, answers, correct){
      this.allQuestions.push({
        questions: questions,
@@ -13,30 +14,61 @@ var  questionList = {
      this.allQuestions[randomNumber].answers.forEach(function(ele, index){
        console.log(index + ':' + ' ' + ele);
      });
-     var promptAnswer = parseInt(prompt('What\'s your Answer?'));
-     this.checkAnswer(promptAnswer, randomNumber);
+     questionList.continueGame(randomNumber);
    },
    getRandomQuestion: function(){
-    // debugger;
      var randomNumber = Math.floor((Math.random() * this.allQuestions.length));
      this.displayQuestions(randomNumber);
    },
-   checkAnswer: function(promptAnswer, randomNumber){
+   checkAnswer: function(promptAnswer, randomNumber, callback){
+     var sc;
     var checkAnswer = this.allQuestions[randomNumber].correct;
      if (promptAnswer === checkAnswer) {
        console.log('WINNER');
+      sc = callback(true);
      } else {
        console.log('WRONG');
+       sc = callback(false);
      }
+     questionList.displayScore(sc);
+     questionList.getRandomQuestion();
+   },
+   continueGame: function(randomNumber) {
+       var promptAnswer = prompt('What\'s your Answer?');
+       if (promptAnswer !== 'exit'){
+         promptAnswer = parseInt(promptAnswer);
+         this.checkAnswer(promptAnswer, randomNumber, keepScore);
+       }
+   },
+   displayScore: function (score) {
+     console.clear();
 
+   console.log("Your current score is: " + score);
+   console.log('---------------------------------');
    }
 }
 
+function score(){
+  var sc = 0;
+  return function(correct) {
+    if(correct) {
+      sc++;
+    }
+    return sc;
+  }
+}
+
+var keepScore = score();
 
 
 questionList.addQuestions('Is Thomas awesome?', ['yes', 'no'], 0);
 questionList.addQuestions('Does my Internet Suck', ['yes', 'no'], 0);
 questionList.addQuestions('Will this work?', ['yes', 'no', 'Maybe'], 2);
+questionList.addQuestions('What Framework is better?', ['React.js', 'Angular', 'none, they each have their own strengths..'], 2);
+questionList.addQuestions('pick a number?', ['yes', 'no', 'Maybe'], 1);
+questionList.addQuestions('is this even a question you can answer?', ['yes', 'no', 'Maybe'], 2);
+
+
 questionList.getRandomQuestion();
 
 
@@ -71,17 +103,7 @@ var q2 = new Question('Who is more awesome out of Thomas or Samantha?', ['Samant
 var q3 = new Question('Does this internet suck?', ['yes', 'no'], 0);
 
 
-function score(){
-  var sc = 0;
-  return function(correct) {
-    if(correct) {
-      sc++;
-    }
-    return sc;
-  }
-}
 
-var keepScore = score();
 
 function continueGame() {
   var randomNumber = Math.floor((Math.random() * allQuestions.length));
