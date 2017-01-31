@@ -1,118 +1,89 @@
-
-var  questionList = {
-   allQuestions: [],
-   addQuestions: function(questions, answers, correct){
-     this.allQuestions.push({
-       questions: questions,
-       answers: answers,
-       correct: correct
-     });
-   },
-   displayQuestions: function(randomNumber){
-     questionList.setUpEventlistners(randomNumber);
-      var questionH1 = document.querySelector('h1');
-      var answersUL = document.querySelector('ul');
-      answersUL.innerHTML  = '';
-      questionH1.innerHTML = '';
-
-      questionH1.textContent = this.allQuestions[randomNumber].questions;
-
-      for (var i = 0; i < questionList.allQuestions[randomNumber].answers.length; i++) {
-       var answerLI = document.createElement('li');
-       answerLI.id = i;
-       answerLI.textContent = this.allQuestions[randomNumber].answers[i];
-       answerLI.appendChild(this.createChoiceButton());
-       answersUL.appendChild(answerLI);
-     }
-     //questionList.continueGame(randomNumber);
-   },
-   createChoiceButton: function () {
-     var choiceButton = document.createElement('button');
-     choiceButton.textContent = 'Pick me!';
-     choiceButton.className = 'choiceButton';
-     return choiceButton;
-
-   },
-   checkAnswer: function(choice, randomNumber, callback){
-     var sc;
-     var random =  randomNumber();
-
-    var checkAnswer = this.allQuestions[randomNumber].correct;
-     if (choice === checkAnswer) {
-      sc = callback(true);
-     } else {
-       sc = callback(false);
-     }
-     questionList.displayScore(sc);
-     questionList.getRandomQuestion(random);
-   },
-   continueGame: function() {
-     var keepRandomNumber = Math.floor((Math.random() * this.allQuestions.length));
-     this.displayQuestions(keepRandomNumber);
-
-   },
-   displayScore: function (score) {
-    console.clear();
-    console.log("Your current score is: " + score);
-    console.log('---------------------------------');
-  },
-  setUpEventlistners: function (randomNumber, keepScore) {
-  //  debugger;
-    var answerssUL = document.querySelector('ul');
-    answerssUL.addEventListener("click", function(e){
-      var clicked = e.target;
-      console.log(e.target);
-      if( clicked.className === 'choiceButton') {
-         choice = parseInt(e.target.parentNode.id);
-         console.log(choice);
-        //console.log(choice);
-        questionList.checkAnswer(choice, randomNumber, keepScore);
-
-      }
-
+//...........LOGIC FOR GAME......................
+var logicModule = (function (dispCont) {
+  var allQuestions = [];
+  addQuestions = function(question, answers, correct){
+    allQuestions.push({
+      question: question,
+      answers: answers,
+      correct: correct
     });
-
-  },
-  checkAnswer: function(choice, randomNumber, callback){
-     var sc;
-    var checkAnswer = this.allQuestions[randomNumber].correct;
-     if (choice === checkAnswer) {
-       console.log('WINNER');
-      sc = callback(true);
-     } else {
-       console.log('WRONG');
-       sc = callback(false);
-     }
-     questionList.displayScore(sc);
-     questionList.continueGame();
-   },
-}
-
-questionList.addQuestions('Is Thomas awesome?', ['yes', 'no'], 0);
-questionList.addQuestions('Does my Internet Suck', ['yes', 'no'], 0);
-questionList.addQuestions('Will this work?', ['yes', 'no', 'Maybe'], 2);
-questionList.addQuestions('Which Framework is better?', ['React.js', 'Angular', 'none, they each have their own strengths..'], 2);
-questionList.addQuestions('pick a number?', ['yes', 'no', 'Maybe'], 1);
-questionList.addQuestions('is this even a question you can answer?', ['yes', 'no', 'Maybe'], 2);
-
-
-var view = {
-
-}
-
-
-
-function score(){
-  var sc = 0;
-  return function(correct) {
-    if(correct) {
-      sc++;
-    }
-    return sc;
   }
+  correctAnswer = function(correct, random) {
+    var check = allQuestions[random].correct;
+    if (correct === check) {
+      console.log('WINNER');
+        startGame();
+    } else {
+      console.log('LOSER');
+    }
+  }
+//PUBLIC TO CONTROLLER
+  return {
+    allQuestions: allQuestions,
+    addQuestions: addQuestions,
+    correctAnswer:  correctAnswer,
+  };
+})(displayModule);
+
+//QUESTIONS:
+logicModule.addQuestions('Will this Work', ['yes', 'no', 'I don\'t know!'], 0);
+logicModule.addQuestions('Who is better, Thomas or Samathana', ['They are both awesome', 'Samantha', 'Thomas'], 0);
+logicModule.addQuestions('Is Thomas Awesome', ['yes', 'no', 'I don\'t know!'], 0);
+logicModule.addQuestions('Will this Work now', ['yes', 'no', 'I don\'t know!'], 0);
+
+
+//.............DISPLAYING GAME.....................
+var displayModule = (function (logiCont) {
+  //DISPLAYS QUESTIONS TO THE SCREEEN
+  startGame = function(){
+    //generating the randomNumber:
+    var randomNumber = (Math.floor((Math.random()*logiCont.allQuestions.length)));
+        //setting up the DOM elements
+         var questionH1 = document.querySelector('h1');
+         var answersUL = document.querySelector('ul');
+         answersUL.innerHTML  = '';
+         questionH1.innerHTML = '';
+         //display the question inside of the h1 tag
+         questionH1.textContent = logiCont.allQuestions[randomNumber].question;
+         //displaying the questions as a li object inside of an UL
+         for (var i = 0; i < logiCont.allQuestions[randomNumber].answers.length; i++) {
+          var answerLI = document.createElement('li');
+          //giving each li an ID
+          answerLI.id = i;
+          answerLI.textContent = logiCont.allQuestions[randomNumber].answers[i];
+          //applyig choicebutton() to li
+          answerLI.appendChild(createChoiceButton());
+          answersUL.appendChild(answerLI);
 }
-var keepScore = score();
+    eventLister(randomNumber);
+  }
+  //....CREATES CHOICE BUTTON
+  createChoiceButton = function () {
+    var choiceButton = document.createElement('button');
+    choiceButton.textContent = 'Pick me!';
+    choiceButton.className = 'choiceButton';
+    return choiceButton;
+  }
 
+  //GETS WHAT CLICKED ON SCREEN
+  eventLister = function(randomNumber){
+    var answersUL = document.querySelector('ul');
+    answersUL.addEventListener("click", function(){
+      var clicked = window.event.target;
+      if( clicked.className === 'choiceButton') {
+         choice = parseInt(clicked.parentNode.id);
+      //  console.log(choice);
+        //return choice;
+        logiCont.correctAnswer(choice, randomNumber);
+      }
+    });
+  }
 
+  return {
+    eventLister: eventLister,
+    startGame: startGame
+  }
 
-questionList.continueGame();
+})(logicModule);
+
+displayModule.startGame();
