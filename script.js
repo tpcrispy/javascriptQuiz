@@ -13,10 +13,11 @@ var logicModule = (function (dispCont) {
     var check = allQuestions[random].correct;
     if (correct === check) {
       console.log('WINNER');
-        startGame();
     } else {
       console.log('LOSER');
     }
+    startGame();
+
   }
 //PUBLIC TO CONTROLLER
   return {
@@ -27,10 +28,10 @@ var logicModule = (function (dispCont) {
 })(displayModule);
 
 //QUESTIONS:
-logicModule.addQuestions('Will this Work', ['yes', 'no', 'I don\'t know!'], 0);
-logicModule.addQuestions('Who is better, Thomas or Samathana', ['They are both awesome', 'Samantha', 'Thomas'], 0);
-logicModule.addQuestions('Is Thomas Awesome', ['yes', 'no', 'I don\'t know!'], 0);
-logicModule.addQuestions('Car can fly, yes!  is that true?', ['yes', 'no', 'I don\'t know!'], 0);
+logicModule.addQuestions('Will this Work', ['yes', 'no', 'I don\'t know!'], 2);
+logicModule.addQuestions('if it does work, will it be a fluke?', ['No! I know what I am doing..', '100% yes', 'Thomas'], 1);
+logicModule.addQuestions('Is Thomas Awesome?', ['yes (hint: it\'s this one)', 'no', 'I don\'t know!'], 0);
+logicModule.addQuestions('Car can fly? yes!  is that true?', ['yes', 'no', 'I don\'t know!'], 1);
 
 
 //.............DISPLAYING GAME.....................
@@ -77,10 +78,10 @@ var displayModule = (function (logiCont) {
          answersUL.removeEventListener('click', eventLister, false);
       //  console.log(choice);
         //return choice;
+        test2(choice, randomNumber);
 
       }
 
-      test2(choice, randomNumber);
 
     });
   };
