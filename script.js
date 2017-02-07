@@ -9,6 +9,7 @@ var logicModule = (function (dispCont) {
     });
   }
   correctAnswer = function(correct, random) {
+    //debugger;
     var check = allQuestions[random].correct;
     if (correct === check) {
       console.log('WINNER');
@@ -29,7 +30,7 @@ var logicModule = (function (dispCont) {
 logicModule.addQuestions('Will this Work', ['yes', 'no', 'I don\'t know!'], 0);
 logicModule.addQuestions('Who is better, Thomas or Samathana', ['They are both awesome', 'Samantha', 'Thomas'], 0);
 logicModule.addQuestions('Is Thomas Awesome', ['yes', 'no', 'I don\'t know!'], 0);
-logicModule.addQuestions('Will this Work now', ['yes', 'no', 'I don\'t know!'], 0);
+logicModule.addQuestions('Car can fly, yes!  is that true?', ['yes', 'no', 'I don\'t know!'], 0);
 
 
 //.............DISPLAYING GAME.....................
@@ -54,29 +55,39 @@ var displayModule = (function (logiCont) {
           //applyig choicebutton() to li
           answerLI.appendChild(createChoiceButton());
           answersUL.appendChild(answerLI);
+          //return randomNumber;
 }
-    eventLister(randomNumber);
-  }
+  return randomNumber;
+  };
   //....CREATES CHOICE BUTTON
   createChoiceButton = function () {
     var choiceButton = document.createElement('button');
     choiceButton.textContent = 'Pick me!';
     choiceButton.className = 'choiceButton';
     return choiceButton;
-  }
+  };
 
   //GETS WHAT CLICKED ON SCREEN
   eventLister = function(randomNumber){
     var answersUL = document.querySelector('ul');
-    answersUL.addEventListener("click", function(){
+    answersUL.addEventListener("click", function(e){
       var clicked = window.event.target;
       if( clicked.className === 'choiceButton') {
          choice = parseInt(clicked.parentNode.id);
+         answersUL.removeEventListener('click', eventLister, false);
       //  console.log(choice);
         //return choice;
-        logiCont.correctAnswer(choice, randomNumber);
+
       }
+
+      test2(choice, randomNumber);
+
     });
+  };
+
+  test2 = function (choice){
+    randomNumber = startGame();
+    logiCont.correctAnswer(choice, randomNumber);
   }
 
   return {
@@ -85,5 +96,5 @@ var displayModule = (function (logiCont) {
   }
 
 })(logicModule);
-
+displayModule.eventLister();
 displayModule.startGame();
